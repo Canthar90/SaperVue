@@ -1,19 +1,17 @@
-<script setup lang="ts">
-import { RouterView } from 'vue-router'
-
-</script>
-
 <template>
-  <header class="bg-purple-400">
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-    <h1 class="text-3xl font-bold underline">  Helooo</h1>
-    <div class="wrapper bg-purple-400">
+  <header></header>
 
-      
+  <body>
+    <div class="pt-18">Placecholder</div>
+    <div>
+      <game-menu class="mt-24"></game-menu>
     </div>
-  </header>
+  </body>
 
   <RouterView />
 </template>
 
-
+<script setup lang="ts">
+import { RouterView } from 'vue-router'
+import GameMenu from './views/GameMenu.vue'
+</script>
