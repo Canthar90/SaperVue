@@ -24,13 +24,32 @@
       </div>
     </div>
   </div>
+  <div :class="gridColsNum">
+    <div v-for="i in numberOfXSegments" key="i">
+      <div v-for="j in numberOfYSegments" key="j">{{ i }} - {{ j }}</div>
+    </div>
+  </div>
+  <!-- <div class="grid justify-center" :class="{grid-rows-{{ numberOfXSegments }}}"></div> -->
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Ref } from 'vue'
 
-let gameEmoji = '😊'
+const numberOfXSegments = ref(8)
+const numberOfYSegments = ref(8)
+const numberOfMines = ref(10)
+
+const gridColsNum = computed(
+  () =>
+    `grid justify-center gap-2 grid-rows-${numberOfXSegments.value} grid-cols-${numberOfYSegments.value} text-xl`
+)
+
+// grid grid-rows-${String(numberOfXSegments)} grid-cols-${String(numberOfYSegments)}
+
+// const gridRowsNum = ref(`grid-cols-${numberOfYSegments}`)
+
+const gameEmoji: Ref<string> = ref('😊')
 let mineCoversLeft: Ref<number> = ref(10)
 
 const timeLeft: Ref<{ minutes: number; seconds: number }> = ref({
@@ -44,14 +63,12 @@ const gameState: Ref<{ gameStarted: boolean; gameLoose: boolean; gameEnded: bool
   gameEnded: false
 })
 
-const statesChecking = computed(() => {
-  if (!gameState.value.gameStarted && !gameState.value.gameEnded) {
-    console.log('oooi')
-  } else {
-    console.log(gameState.value.gameEnded)
-  }
-  return ''
-})
+function gameOver() {
+  gameState.value.gameLoose = true
+  gameState.value.gameEnded = true
+  gameState.value.gameStarted = false
+  gameEmoji.value = '😔'
+}
 
 const GameReset = () => {
   if (gameState.value.gameStarted) {
@@ -66,9 +83,7 @@ const GameReset = () => {
   }
 
   if (timeLeft.value.minutes === 0 && timeLeft.value.seconds === 0 && gameState.value.gameStarted) {
-    gameState.value.gameLoose = true
-    gameState.value.gameEnded = true
-    gameState.value.gameStarted = false
+    gameOver()
   }
 }
 </script>
