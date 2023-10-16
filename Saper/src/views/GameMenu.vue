@@ -26,7 +26,7 @@
   </div>
 
   <div class="flex justify-center">
-    <div :class="gridColsNum">
+    <div :class="gridColsNum" class="grid gap-2 justify-center">
       <div v-for="seg in gameSegments" :key="seg.id" :id="String(seg.id)" :class="seg.styles">
         {{ seg.sign }}
       </div>
@@ -100,7 +100,7 @@ function GenerateBombSegments() {
       console.log('number ' + randomIndex)
       pastIndexes.push(randomIndex)
       i++
-    } else if (!pastIndexes) {
+    } else if (!pastIndexes.length) {
       console.log('First one')
       console.log('number ' + randomIndex)
       pastIndexes.push(randomIndex)
@@ -111,12 +111,7 @@ function GenerateBombSegments() {
 }
 
 const gridColsNum = computed(() => {
-  let numberOfRows = 'grid-rows-' + String(numberOfXSegments.value)
-  let numberOfCols = 'grid-cols-' + String(numberOfYSegments.value)
-  console.log(numberOfCols)
-  console.log(typeof numberOfCols)
-
-  return 'grid gap-2 justify-center' + ' ' + numberOfRows + ' ' + numberOfCols
+  return [`grid-rows-${numberOfXSegments.value}`, `grid-cols-${numberOfYSegments.value}`]
 })
 
 // ${String(numberOfXSegments.value)}
