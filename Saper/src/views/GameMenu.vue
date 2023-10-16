@@ -49,7 +49,7 @@ const gameSegments: Ref<Segment[]> = ref([])
 onMounted(() => GenerateSegments())
 
 function GenerateSegments() {
-  let idNr = 1
+  let idNr = 0
   for (let i = 1; i < numberOfXSegments.value + 1; i++) {
     for (let j = 1; j < numberOfYSegments.value + 1; j++) {
       const Segment: Segment = {
@@ -63,6 +63,51 @@ function GenerateSegments() {
       idNr++
     }
   }
+  GenerateBombSegments()
+}
+
+function checkIfOccupyed(index: number, pastIndexes: number[]) {
+  if (pastIndexes.includes(index)) {
+    return true
+  } else return false
+}
+
+function checkIfUnique(index: number, pastIndexes: number[]) {
+  if (!checkIfOccupyed(index, pastIndexes)) {
+    return true
+  } else return false
+}
+
+function changeBombStates(indexList: number[]) {
+  for (let num in indexList) {
+    let newIndex = indexList[num]
+    gameSegments.value[newIndex].isABomb = true
+    gameSegments.value[newIndex].styles =
+      'border border-solid border-black bg-red-500 rounded-lg p-6 flex justify-center'
+  }
+}
+
+function GenerateBombSegments() {
+  let i = 0
+  let pastIndexes: number[] = []
+  let randomIndex: number = 0
+
+  while (i < numberOfMines.value) {
+    randomIndex = Math.floor(Math.random() * gameSegments.value.length)
+    if (checkIfUnique(randomIndex, pastIndexes)) {
+      console.log('Unique checking')
+
+      console.log('number ' + randomIndex)
+      pastIndexes.push(randomIndex)
+      i++
+    } else if (!pastIndexes) {
+      console.log('First one')
+      console.log('number ' + randomIndex)
+      pastIndexes.push(randomIndex)
+      i++
+    }
+  }
+  changeBombStates(pastIndexes)
 }
 
 const gridColsNum = computed(() => {
@@ -71,7 +116,7 @@ const gridColsNum = computed(() => {
   console.log(numberOfCols)
   console.log(typeof numberOfCols)
 
-  return `grid gap-2 justify-center grid-rows-8 grid-cols-8`
+  return 'grid gap-2 justify-center' + ' ' + numberOfRows + ' ' + numberOfCols
 })
 
 // ${String(numberOfXSegments.value)}
