@@ -31,9 +31,10 @@
         {{ seg.sign }}
       </div> -->
       <div
-        v-for="index in totalNyumberOfSegments"
+        v-for="index in totalNumberOfSegments"
         :key="index"
-        class="border border-solid border-black bg-slate-600 rounded-lg p-6 flex justify-center"
+        class="border border-solid border-black rounded-lg p-6 flex justify-center"
+        :class="{ 'bg-red-500': isBomb(index), 'bg-slate-600': !isBomb(index) }"
         role="button"
         @click="clickOnSegment(index)"
       ></div>
@@ -53,14 +54,18 @@ const bombSegmentIndexes: Ref<number[]> = ref([])
 
 // onMounted(() => GenerateSegments())
 
-const totalNyumberOfSegments = computed(() => {
+const totalNumberOfSegments = computed(() => {
   return numberOfXSegments.value * numberOfYSegments.value
 })
 onMounted(() => GenerateBombSegments())
 
-function clickOnSegment(index: number) {
+const clickOnSegment = (index: number) => {
   console.log('Index ' + index)
   console.log(bombSegmentIndexes.value)
+}
+
+const isBomb = (index: number) => {
+  if (bombSegmentIndexes.value.includes(index)) return true
 }
 
 function checkIfOccupyed(index: number, pastIndexes: number[]) {
@@ -81,7 +86,7 @@ function GenerateBombSegments() {
   let randomIndex: number = 0
 
   while (i < numberOfMines.value) {
-    randomIndex = Math.floor(Math.random() * totalNyumberOfSegments.value)
+    randomIndex = Math.floor(Math.random() * totalNumberOfSegments.value)
     if (checkIfUnique(randomIndex, pastIndexes)) {
       pastIndexes.push(randomIndex)
       i++
