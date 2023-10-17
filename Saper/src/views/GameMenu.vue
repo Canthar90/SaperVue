@@ -27,43 +27,40 @@
 
   <div class="flex justify-center">
     <div :class="gridColsNum" class="grid gap-2 justify-center">
-      <div v-for="seg in gameSegments" :key="seg.id" :id="String(seg.id)" :class="seg.styles">
+      <!-- <div v-for="seg in gameSegments" :key="seg.id" :id="String(seg.id)" :class="seg.styles">
         {{ seg.sign }}
-      </div>
+      </div> -->
+      <div
+        v-for="index in totalNyumberOfSegments"
+        :key="index"
+        class="border border-solid border-black bg-slate-600 rounded-lg p-6 flex justify-center"
+        role="button"
+        @click="clickOnSegment(index)"
+      ></div>
     </div>
   </div>
-  <!-- <div class="grid justify-center" :class="{grid-rows-{{ numberOfXSegments }}}"></div> -->
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import type { Ref } from 'vue'
 
-type Segment = { id: number; styles: string; isABomb: boolean; sign: string }
-
 const numberOfXSegments = ref(8)
 const numberOfYSegments = ref(8)
 const numberOfMines = ref(10)
-const gameSegments: Ref<Segment[]> = ref([])
 
-onMounted(() => GenerateSegments())
+const bombSegmentIndexes: Ref<number[]> = ref([])
 
-function GenerateSegments() {
-  let idNr = 0
-  for (let i = 1; i < numberOfXSegments.value + 1; i++) {
-    for (let j = 1; j < numberOfYSegments.value + 1; j++) {
-      const Segment: Segment = {
-        id: idNr,
-        styles: 'border border-solid border-black bg-slate-600 rounded-lg p-6 flex justify-center',
-        isABomb: false,
-        sign: ''
-      }
-      gameSegments.value.push(Segment)
+// onMounted(() => GenerateSegments())
 
-      idNr++
-    }
-  }
-  GenerateBombSegments()
+const totalNyumberOfSegments = computed(() => {
+  return numberOfXSegments.value * numberOfYSegments.value
+})
+onMounted(() => GenerateBombSegments())
+
+function clickOnSegment(index: number) {
+  console.log('Index ' + index)
+  console.log(bombSegmentIndexes.value)
 }
 
 function checkIfOccupyed(index: number, pastIndexes: number[]) {
@@ -78,43 +75,27 @@ function checkIfUnique(index: number, pastIndexes: number[]) {
   } else return false
 }
 
-function changeBombStates(indexList: number[]) {
-  for (let num in indexList) {
-    let newIndex = indexList[num]
-    gameSegments.value[newIndex].isABomb = true
-    gameSegments.value[newIndex].styles =
-      'border border-solid border-black bg-red-500 rounded-lg p-6 flex justify-center'
-  }
-}
-
 function GenerateBombSegments() {
   let i = 0
   let pastIndexes: number[] = []
   let randomIndex: number = 0
 
   while (i < numberOfMines.value) {
-    randomIndex = Math.floor(Math.random() * gameSegments.value.length)
+    randomIndex = Math.floor(Math.random() * totalNyumberOfSegments.value)
     if (checkIfUnique(randomIndex, pastIndexes)) {
-      console.log('Unique checking')
-
-      console.log('number ' + randomIndex)
       pastIndexes.push(randomIndex)
       i++
     } else if (!pastIndexes.length) {
-      console.log('First one')
-      console.log('number ' + randomIndex)
       pastIndexes.push(randomIndex)
       i++
     }
   }
-  changeBombStates(pastIndexes)
+  bombSegmentIndexes.value = pastIndexes
 }
 
 const gridColsNum = computed(() => {
   return [`grid-rows-${numberOfXSegments.value}`, `grid-cols-${numberOfYSegments.value}`]
 })
-
-// ${String(numberOfXSegments.value)}
 
 const gameEmoji: Ref<string> = ref('😊')
 let mineCoversLeft: Ref<number> = ref(10)
