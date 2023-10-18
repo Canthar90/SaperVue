@@ -27,14 +27,14 @@
 
   <div class="flex justify-center">
     <div :class="gridColsNum" class="grid gap-2 justify-center">
-      <!-- <div v-for="seg in gameSegments" :key="seg.id" :id="String(seg.id)" :class="seg.styles">
-        {{ seg.sign }}
-      </div> -->
       <div
         v-for="index in totalNumberOfSegments"
         :key="index"
         class="border border-solid border-black rounded-lg p-6 flex justify-center"
-        :class="{ 'bg-red-500': isBomb(index), 'bg-slate-600': !isBomb(index) }"
+        :class="{
+          'bg-red-500': isBombUncovered(index),
+          'bg-slate-600': !isBombUncovered(index)
+        }"
         role="button"
         @click="clickOnSegment(index)"
       ></div>
@@ -50,7 +50,7 @@ const numberOfXSegments = ref(8)
 const numberOfYSegments = ref(8)
 const numberOfMines = ref(10)
 
-const bombSegmentIndexes: Ref<number[]> = ref([])
+const bombSegmentIndexes: Ref<{ index: number; clicked: boolean }[]> = ref([])
 
 // onMounted(() => GenerateSegments())
 
@@ -62,10 +62,20 @@ onMounted(() => GenerateBombSegments())
 const clickOnSegment = (index: number) => {
   console.log('Index ' + index)
   console.log(bombSegmentIndexes.value)
+  if (isBomb(index)) {
+    bombSegmentIndexes.value.find((e) => (e.clicked = true))
+  }
+  return true
 }
 
 const isBomb = (index: number) => {
-  if (bombSegmentIndexes.value.includes(index)) return true
+  if (bombSegmentIndexes.value.find((e) => e.index === index)) return true
+}
+
+const isBombUncovered = (index: number) => {
+  if (!isBomb(index)) return
+
+  if (bombSegmentIndexes.value.find((e) => e.clicked === true)) return true
 }
 
 function checkIfOccupyed(index: number, pastIndexes: number[]) {
@@ -95,7 +105,10 @@ function GenerateBombSegments() {
       i++
     }
   }
-  bombSegmentIndexes.value = pastIndexes
+  for (let elem in pastIndexes) {
+    let newElement = { index: pastIndexes[elem], clicked: false }
+    bombSegmentIndexes.value.push(newElement)
+  }
 }
 
 const gridColsNum = computed(() => {
