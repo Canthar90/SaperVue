@@ -50,32 +50,33 @@ const numberOfXSegments = ref(8)
 const numberOfYSegments = ref(8)
 const numberOfMines = ref(10)
 
-const bombSegmentIndexes: Ref<{ index: number; clicked: boolean }[]> = ref([])
+const bombSegmentObjects: Ref<{ index: number; clicked: boolean }[]> = ref([])
 
 // onMounted(() => GenerateSegments())
 
 const totalNumberOfSegments = computed(() => {
-  return numberOfXSegments.value * numberOfYSegments.value
+  let numberOfAllSegments = numberOfXSegments.value * numberOfYSegments.value
+
+  return numberOfAllSegments
 })
+
 onMounted(() => GenerateBombSegments())
 
 const clickOnSegment = (index: number) => {
-  console.log('Index ' + index)
-  console.log(bombSegmentIndexes.value)
-  if (isBomb(index)) {
-    bombSegmentIndexes.value.find((e) => (e.clicked = true))
-  }
-  return true
+  if (!isBomb(index)) return
+
+  const found = bombSegmentObjects.value.find((e) => e.index === index)
+  if (found) found.clicked = true
 }
 
 const isBomb = (index: number) => {
-  if (bombSegmentIndexes.value.find((e) => e.index === index)) return true
+  if (bombSegmentObjects.value.find((e) => e.index === index)) return true
 }
 
 const isBombUncovered = (index: number) => {
   if (!isBomb(index)) return
 
-  if (bombSegmentIndexes.value.find((e) => e.clicked === true)) return true
+  if (bombSegmentObjects.value.find((e) => e.clicked === true && e.index === index)) return true
 }
 
 function checkIfOccupyed(index: number, pastIndexes: number[]) {
@@ -84,7 +85,7 @@ function checkIfOccupyed(index: number, pastIndexes: number[]) {
   } else return false
 }
 
-function checkIfUnique(index: number, pastIndexes: number[]) {
+function checkIfNumberIsUnique(index: number, pastIndexes: number[]) {
   if (!checkIfOccupyed(index, pastIndexes)) {
     return true
   } else return false
@@ -97,7 +98,7 @@ function GenerateBombSegments() {
 
   while (i < numberOfMines.value) {
     randomIndex = Math.floor(Math.random() * totalNumberOfSegments.value)
-    if (checkIfUnique(randomIndex, pastIndexes)) {
+    if (checkIfNumberIsUnique(randomIndex, pastIndexes)) {
       pastIndexes.push(randomIndex)
       i++
     } else if (!pastIndexes.length) {
@@ -105,9 +106,9 @@ function GenerateBombSegments() {
       i++
     }
   }
-  for (let elem in pastIndexes) {
-    let newElement = { index: pastIndexes[elem], clicked: false }
-    bombSegmentIndexes.value.push(newElement)
+  for (const elem in pastIndexes) {
+    const newElement = { index: pastIndexes[elem], clicked: false }
+    bombSegmentObjects.value.push(newElement)
   }
 }
 
