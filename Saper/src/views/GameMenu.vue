@@ -33,7 +33,8 @@
         class="border border-solid border-black rounded-lg p-6 flex justify-center"
         :class="{
           'bg-red-500': isBombUncovered(index),
-          'bg-slate-600': !isBombUncovered(index)
+          'bg-slate-200': isSegmentUncovered(index),
+          'bg-slate-600': isSegmentCovered(index)
         }"
         role="button"
         @click="clickOnSegment(index)"
@@ -51,8 +52,7 @@ const numberOfYSegments = ref(8)
 const numberOfMines = ref(10)
 
 const bombSegmentObjects: Ref<{ index: number; clicked: boolean }[]> = ref([])
-
-// onMounted(() => GenerateSegments())
+const segmentUncoveredList: Ref<boolean[]> = ref([])
 
 const totalNumberOfSegments = computed(() => {
   let numberOfAllSegments = numberOfXSegments.value * numberOfYSegments.value
@@ -60,10 +60,17 @@ const totalNumberOfSegments = computed(() => {
   return numberOfAllSegments
 })
 
-onMounted(() => GenerateBombSegments())
+onMounted(() => {
+  GenerateBombSegments()
+  GenerateSegmentUncoverFlags()
+})
 
 const clickOnSegment = (index: number) => {
-  if (!isBomb(index)) return
+  if (!isBomb(index)) {
+    segmentUncoveredList.value[index] = true
+    console.log(segmentUncoveredList.value)
+    return
+  }
 
   const found = bombSegmentObjects.value.find((e) => e.index === index)
   if (found) found.clicked = true
@@ -74,9 +81,21 @@ const isBomb = (index: number) => {
 }
 
 const isBombUncovered = (index: number) => {
-  if (!isBomb(index)) return
+  if (!isBomb(index)) return false
 
   if (bombSegmentObjects.value.find((e) => e.clicked === true && e.index === index)) return true
+}
+
+const isSegmentUncovered = (index: number) => {
+  if (isBomb(index)) return false
+
+  if (segmentUncoveredList.value[index] === true) return true
+}
+
+const isSegmentCovered = (index: number) => {
+  if (!isSegmentUncovered(index) && !isBombUncovered(index)) {
+    return true
+  } else return false
 }
 
 function checkIfOccupyed(index: number, pastIndexes: number[]) {
@@ -110,6 +129,15 @@ function GenerateBombSegments() {
     const newElement = { index: pastIndexes[elem], clicked: false }
     bombSegmentObjects.value.push(newElement)
   }
+}
+
+function GenerateSegmentUncoverFlags() {
+  let booleanList = []
+  for (let i = 0; i < totalNumberOfSegments.value + 1; i++) {
+    booleanList.push(false)
+  }
+  console.log(booleanList)
+  segmentUncoveredList.value = booleanList
 }
 
 const gridColsNum = computed(() => {

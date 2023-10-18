@@ -9,6 +9,7 @@ module.exports = {
     'lg:text-4xl',
     'grid-cols-8',
     'grid-rows-8',
+    'bg-slate-200',
     { pattern: /grid-(rows|cols)-\d+(\.\d+)?/ }
   ],
   theme: {
