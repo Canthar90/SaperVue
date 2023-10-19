@@ -61,14 +61,16 @@ const totalNumberOfSegments = computed(() => {
 })
 
 onMounted(() => {
-  GenerateBombSegments()
-  GenerateSegmentUncoverFlags()
+  generateBombSegments()
+  generateSegmentUncoverFlags()
 })
 
 const clickOnSegment = (index: number) => {
   if (!isBomb(index)) {
     segmentUncoveredList.value[index] = true
     console.log(segmentUncoveredList.value)
+
+    console.log(checkIfNearbySegmentIsBomb(index))
     return
   }
 
@@ -110,7 +112,7 @@ function checkIfNumberIsUnique(index: number, pastIndexes: number[]) {
   } else return false
 }
 
-function GenerateBombSegments() {
+function generateBombSegments() {
   let i = 0
   let pastIndexes: number[] = []
   let randomIndex: number = 0
@@ -131,13 +133,27 @@ function GenerateBombSegments() {
   }
 }
 
-function GenerateSegmentUncoverFlags() {
+function generateSegmentUncoverFlags() {
   let booleanList = []
   for (let i = 0; i < totalNumberOfSegments.value + 1; i++) {
     booleanList.push(false)
   }
   console.log(booleanList)
   segmentUncoveredList.value = booleanList
+}
+
+function checkIfNearbySegmentIsBomb(index: number) {
+  const maxRowVal = numberOfXSegments.value
+  const maxColVal = numberOfYSegments.value
+  let numberOfNearbyBombs = 0
+  if (index / totalNumberOfSegments.value < 1 && index !== maxColVal && index !== 1) {
+    if (isBomb(index + 1)) numberOfNearbyBombs++
+    if (isBomb(index - 1)) numberOfNearbyBombs++
+    if (isBomb(index + 8)) numberOfNearbyBombs++
+    if (isBomb(index + 7)) numberOfNearbyBombs++
+    if (isBomb(index + 9)) numberOfNearbyBombs++
+  }
+  return numberOfNearbyBombs
 }
 
 const gridColsNum = computed(() => {
