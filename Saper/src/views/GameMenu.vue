@@ -38,7 +38,15 @@
         }"
         role="button"
         @click="clickOnSegment(index)"
-      ></div>
+      >
+        <p
+          v-if="segmentInformationObject[index].numberOfNearbyBombs > 0"
+          class="font-black underline text-xs"
+        >
+          {{ segmentInformationObject[index].numberOfNearbyBombs }}
+        </p>
+        <p v-else class="invisible">0</p>
+      </div>
     </div>
   </div>
 </template>
@@ -153,15 +161,22 @@ function generateSegmentUncoverFlags() {
 
 function checkIfNearbySegmentIsBomb(index: number): number {
   let numberOfNearbyBombs = 0
-  if (index / totalNumberOfSegments.value < 1 && index !== numberOfYSegments.value && index !== 1) {
+  numberOfNearbyBombs = firstRowNoCornersNumberOfNearbyBombs(index)
+  if (numberOfNearbyBombs) {
+    return numberOfNearbyBombs
+  } else return 0
+}
+
+function firstRowNoCornersNumberOfNearbyBombs(index: number) {
+  let numberOfNearbyBombs = 0
+  if (index / numberOfYSegments.value < 1 && index !== numberOfYSegments.value && index !== 1) {
     if (isBomb(index + 1)) numberOfNearbyBombs++
     if (isBomb(index - 1)) numberOfNearbyBombs++
     if (isBomb(index + 8)) numberOfNearbyBombs++
     if (isBomb(index + 7)) numberOfNearbyBombs++
     if (isBomb(index + 9)) numberOfNearbyBombs++
     return numberOfNearbyBombs
-  }
-  return 0
+  } else return 0
 }
 
 const gridColsNum = computed(() => {
