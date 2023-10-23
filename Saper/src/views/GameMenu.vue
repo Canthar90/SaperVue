@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onBeforeMount } from 'vue'
 import type { Ref } from 'vue'
 
 const numberOfXSegments = ref(8)
@@ -52,7 +52,15 @@ const numberOfYSegments = ref(8)
 const numberOfMines = ref(10)
 
 const bombSegmentObjects: Ref<{ index: number; clicked: boolean }[]> = ref([])
-const segmentUncoveredList: Ref<boolean[]> = ref([])
+const segmentInformationObject: Ref<{ uncovered: boolean; numberOfNearbyBombs: number }[]> = ref([])
+
+onBeforeMount(() => {
+  generateSegmentUncoverFlags()
+})
+
+onBeforeMount(() => {
+  generateBombSegments()
+})
 
 const totalNumberOfSegments = computed(() => {
   let numberOfAllSegments = numberOfXSegments.value * numberOfYSegments.value
@@ -60,17 +68,13 @@ const totalNumberOfSegments = computed(() => {
   return numberOfAllSegments
 })
 
-onMounted(() => {
-  generateBombSegments()
-  generateSegmentUncoverFlags()
-})
-
 const clickOnSegment = (index: number) => {
   if (!isBomb(index)) {
-    segmentUncoveredList.value[index] = true
-    console.log(segmentUncoveredList.value)
+    segmentInformationObject.value[index].uncovered = true
+    console.log(segmentInformationObject.value[index].uncovered)
 
-    console.log(checkIfNearbySegmentIsBomb(index))
+    segmentInformationObject.value[index].numberOfNearbyBombs = checkIfNearbySegmentIsBomb(index)
+    console.log(segmentInformationObject.value[index].numberOfNearbyBombs)
     return
   }
 
@@ -91,7 +95,7 @@ const isBombUncovered = (index: number) => {
 const isSegmentUncovered = (index: number) => {
   if (isBomb(index)) return false
 
-  if (segmentUncoveredList.value[index] === true) return true
+  if (segmentInformationObject.value[index].uncovered === true) return true
 }
 
 const isSegmentCovered = (index: number) => {
@@ -134,26 +138,30 @@ function generateBombSegments() {
 }
 
 function generateSegmentUncoverFlags() {
-  let booleanList = []
+  // let booleanList = []
   for (let i = 0; i < totalNumberOfSegments.value + 1; i++) {
-    booleanList.push(false)
+    const newElement = { uncovered: false, numberOfNearbyBombs: 0 }
+    segmentInformationObject.value.push(newElement)
+    // booleanList.push(false)
   }
-  console.log(booleanList)
-  segmentUncoveredList.value = booleanList
+  console.log(segmentInformationObject.value)
+
+  for (let elem in segmentInformationObject.value) {
+    console.log(segmentInformationObject.value[elem].uncovered)
+  }
 }
 
-function checkIfNearbySegmentIsBomb(index: number) {
-  const maxRowVal = numberOfXSegments.value
-  const maxColVal = numberOfYSegments.value
+function checkIfNearbySegmentIsBomb(index: number): number {
   let numberOfNearbyBombs = 0
-  if (index / totalNumberOfSegments.value < 1 && index !== maxColVal && index !== 1) {
+  if (index / totalNumberOfSegments.value < 1 && index !== numberOfYSegments.value && index !== 1) {
     if (isBomb(index + 1)) numberOfNearbyBombs++
     if (isBomb(index - 1)) numberOfNearbyBombs++
     if (isBomb(index + 8)) numberOfNearbyBombs++
     if (isBomb(index + 7)) numberOfNearbyBombs++
     if (isBomb(index + 9)) numberOfNearbyBombs++
+    return numberOfNearbyBombs
   }
-  return numberOfNearbyBombs
+  return 0
 }
 
 const gridColsNum = computed(() => {
