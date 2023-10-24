@@ -79,10 +79,10 @@ const totalNumberOfSegments = computed(() => {
 const clickOnSegment = (index: number) => {
   if (!isBomb(index)) {
     segmentInformationObject.value[index].uncovered = true
-    console.log(segmentInformationObject.value[index].uncovered)
+    // console.log(segmentInformationObject.value[index].uncovered)
 
     segmentInformationObject.value[index].numberOfNearbyBombs = checkIfNearbySegmentIsBomb(index)
-    console.log(segmentInformationObject.value[index].numberOfNearbyBombs)
+    // console.log(segmentInformationObject.value[index].numberOfNearbyBombs)
     return
   }
 
@@ -146,11 +146,9 @@ function generateBombSegments() {
 }
 
 function generateSegmentUncoverFlags() {
-  // let booleanList = []
   for (let i = 0; i < totalNumberOfSegments.value + 1; i++) {
     const newElement = { uncovered: false, numberOfNearbyBombs: 0 }
     segmentInformationObject.value.push(newElement)
-    // booleanList.push(false)
   }
   console.log(segmentInformationObject.value)
 
@@ -166,14 +164,20 @@ function checkIfNearbySegmentIsBomb(index: number): number {
 
   if (numberOfNearbyBombs) {
     return numberOfNearbyBombs
-  } else return 0
+  } else {
+    const indexesToSearch = indexesOfNearbySegments(index)
+    for (let ind in indexesToSearch) {
+      continueCheckingZeros(indexesToSearch[ind])
+    }
+
+    return 0
+  }
 }
 
 function indexesOfNearbySegments(index: number) {
   let nearbyIndexes: number[] = []
   const columnsNr = numberOfYSegments.value
   if (index % columnsNr === 0) {
-    console.log(index)
     nearbyIndexes = [
       index - 1,
       index + columnsNr,
@@ -207,14 +211,28 @@ function indexesOfNearbySegments(index: number) {
   }
 }
 
+function continueCheckingZeros(index: number) {
+  if (
+    segmentInformationObject.value[index] === undefined ||
+    segmentInformationObject.value[index].uncovered === true ||
+    segmentInformationObject.value[index].numberOfNearbyBombs > 0
+  ) {
+    return
+  } else {
+    clickOnSegment(index)
+  }
+}
+
 function detectNearbyBombs(index: number) {
   let numberOfNearbyBombs = 0
   const listOfNerbySegments = indexesOfNearbySegments(index)
 
   for (let elem in listOfNerbySegments) {
     const element = listOfNerbySegments[elem]
-    console.log(element)
-    if (isBomb(element)) numberOfNearbyBombs++
+
+    if (isBomb(element)) {
+      numberOfNearbyBombs++
+    }
   }
   return numberOfNearbyBombs
 }
