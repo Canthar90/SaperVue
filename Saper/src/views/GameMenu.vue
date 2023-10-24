@@ -161,48 +161,62 @@ function generateSegmentUncoverFlags() {
 
 function checkIfNearbySegmentIsBomb(index: number): number {
   let numberOfNearbyBombs = 0
-  numberOfNearbyBombs = firstRowNoCornersNumberOfNearbyBombs(index)
-  numberOfNearbyBombs = rightEdgePolesNumberOfNerbyBombs(index)
+
+  numberOfNearbyBombs = detectNearbyBombs(index)
+
   if (numberOfNearbyBombs) {
     return numberOfNearbyBombs
   } else return 0
 }
 
-function firstRowNoCornersNumberOfNearbyBombs(index: number) {
-  let numberOfNearbyBombs = 0
-  if (index / numberOfXSegments.value < 1 && index !== numberOfYSegments.value && index !== 1) {
-    if (isBomb(index + 1)) numberOfNearbyBombs++
-    if (isBomb(index - 1)) numberOfNearbyBombs++
-    if (isBomb(index + 8)) numberOfNearbyBombs++
-    if (isBomb(index + 7)) numberOfNearbyBombs++
-    if (isBomb(index + 9)) numberOfNearbyBombs++
-    return numberOfNearbyBombs
-  } else return 0
+function indexesOfNearbySegments(index: number) {
+  let nearbyIndexes: number[] = []
+  const columnsNr = numberOfYSegments.value
+  if (index % columnsNr === 0) {
+    console.log(index)
+    nearbyIndexes = [
+      index - 1,
+      index + columnsNr,
+      index + columnsNr - 1,
+      index - columnsNr,
+      index - columnsNr - 1
+    ]
+    return nearbyIndexes
+  } else if (index % columnsNr === 1) {
+    nearbyIndexes = [
+      index + 1,
+      index + columnsNr,
+      index + columnsNr + 1,
+      index - columnsNr,
+      index - columnsNr + 1
+    ]
+    return nearbyIndexes
+  } else {
+    nearbyIndexes = [
+      index + 1,
+      index - 1,
+      index + columnsNr,
+      index + columnsNr + 1,
+      index + columnsNr - 1,
+      index - columnsNr,
+      index - columnsNr - 1,
+      index - columnsNr + 1
+    ]
+
+    return nearbyIndexes
+  }
 }
 
-// function MiddleRowsNumberOfNerbyBombs(index: number){
-//   let numberOfNearbyBombs = 0
-//   if (index/numberOfXSegments.value > 1 && index/numberOfXSegments.value > numberOfXSegments.value - 1)
-// }
-
-function rightEdgePolesNumberOfNerbyBombs(index: number) {
+function detectNearbyBombs(index: number) {
   let numberOfNearbyBombs = 0
-  if (!(index % numberOfYSegments.value === 0)) return 0
+  const listOfNerbySegments = indexesOfNearbySegments(index)
 
-  if (isBomb(index - 1)) numberOfNearbyBombs++
-
-  if (isBomb(index + (numberOfXSegments.value - 1))) numberOfNearbyBombs++
-  if (isBomb(index + numberOfXSegments.value)) numberOfNearbyBombs++
-
-  if (isBomb(index - (numberOfXSegments.value - 1))) numberOfNearbyBombs++
-  if (isBomb(index - numberOfXSegments.value)) numberOfNearbyBombs++
-
+  for (let elem in listOfNerbySegments) {
+    const element = listOfNerbySegments[elem]
+    console.log(element)
+    if (isBomb(element)) numberOfNearbyBombs++
+  }
   return numberOfNearbyBombs
-}
-
-function leftEdgePolesNumberOfNerbyBombs(index: number) {
-  let numberOfNearbyBombs = 0
-  if (!(index % numberOfYSegments.value === 1)) return 0
 }
 
 const gridColsNum = computed(() => {
