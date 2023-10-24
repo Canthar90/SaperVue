@@ -56,7 +56,7 @@ import { ref, computed, onBeforeMount } from 'vue'
 import type { Ref } from 'vue'
 
 const numberOfXSegments = ref(8)
-const numberOfYSegments = ref(8)
+const numberOfYSegments = ref(9)
 const numberOfMines = ref(10)
 
 const bombSegmentObjects: Ref<{ index: number; clicked: boolean }[]> = ref([])
@@ -162,6 +162,7 @@ function generateSegmentUncoverFlags() {
 function checkIfNearbySegmentIsBomb(index: number): number {
   let numberOfNearbyBombs = 0
   numberOfNearbyBombs = firstRowNoCornersNumberOfNearbyBombs(index)
+  numberOfNearbyBombs = rightEdgePolesNumberOfNerbyBombs(index)
   if (numberOfNearbyBombs) {
     return numberOfNearbyBombs
   } else return 0
@@ -169,7 +170,7 @@ function checkIfNearbySegmentIsBomb(index: number): number {
 
 function firstRowNoCornersNumberOfNearbyBombs(index: number) {
   let numberOfNearbyBombs = 0
-  if (index / numberOfYSegments.value < 1 && index !== numberOfYSegments.value && index !== 1) {
+  if (index / numberOfXSegments.value < 1 && index !== numberOfYSegments.value && index !== 1) {
     if (isBomb(index + 1)) numberOfNearbyBombs++
     if (isBomb(index - 1)) numberOfNearbyBombs++
     if (isBomb(index + 8)) numberOfNearbyBombs++
@@ -177,6 +178,31 @@ function firstRowNoCornersNumberOfNearbyBombs(index: number) {
     if (isBomb(index + 9)) numberOfNearbyBombs++
     return numberOfNearbyBombs
   } else return 0
+}
+
+// function MiddleRowsNumberOfNerbyBombs(index: number){
+//   let numberOfNearbyBombs = 0
+//   if (index/numberOfXSegments.value > 1 && index/numberOfXSegments.value > numberOfXSegments.value - 1)
+// }
+
+function rightEdgePolesNumberOfNerbyBombs(index: number) {
+  let numberOfNearbyBombs = 0
+  if (!(index % numberOfYSegments.value === 0)) return 0
+
+  if (isBomb(index - 1)) numberOfNearbyBombs++
+
+  if (isBomb(index + (numberOfXSegments.value - 1))) numberOfNearbyBombs++
+  if (isBomb(index + numberOfXSegments.value)) numberOfNearbyBombs++
+
+  if (isBomb(index - (numberOfXSegments.value - 1))) numberOfNearbyBombs++
+  if (isBomb(index - numberOfXSegments.value)) numberOfNearbyBombs++
+
+  return numberOfNearbyBombs
+}
+
+function leftEdgePolesNumberOfNerbyBombs(index: number) {
+  let numberOfNearbyBombs = 0
+  if (!(index % numberOfYSegments.value === 1)) return 0
 }
 
 const gridColsNum = computed(() => {
