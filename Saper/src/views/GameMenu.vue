@@ -66,6 +66,25 @@ const segmentInformationObject: Ref<
   { uncovered: boolean; numberOfNearbyBombs: number; masked: boolean }[]
 > = ref([])
 
+const gameIsOn = computed(() => {
+  for (let elem in bombSegmentObjects.value) {
+    if (bombSegmentObjects.value[elem].clicked) return false
+  }
+  const numberOfUncoveredSegments = countUncoveredElements()
+  const segmentsToUncover = totalNumberOfSegments.value - numberOfMines.value
+  if (numberOfUncoveredSegments === segmentsToUncover) {
+    return false
+  } else return true
+})
+
+function countUncoveredElements(): number {
+  let numberOfUncoveredSegments = 0
+  for (let elem in segmentInformationObject.value) {
+    if (segmentInformationObject.value[elem].uncovered) numberOfUncoveredSegments++
+  }
+  return numberOfUncoveredSegments
+}
+
 onBeforeMount(() => {
   generateSegmentUncoverFlags()
 })
@@ -81,7 +100,7 @@ const totalNumberOfSegments = computed(() => {
 })
 
 const clickOnSegment = (index: number) => {
-  if (isSegmentLocked(index)) return
+  if (isSegmentLocked(index) || !gameIsOn.value) return
   if (!isBomb(index)) {
     segmentInformationObject.value[index].uncovered = true
 
@@ -95,7 +114,11 @@ const clickOnSegment = (index: number) => {
 }
 
 const rightClickOnSegment = (index: number) => {
-  if (mineCoversLeft.value <= 0 || segmentInformationObject.value[index].uncovered) {
+  if (
+    mineCoversLeft.value <= 0 ||
+    segmentInformationObject.value[index].uncovered ||
+    !gameIsOn.value
+  ) {
     return
   }
 
