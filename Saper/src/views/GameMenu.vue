@@ -81,6 +81,7 @@ const totalNumberOfSegments = computed(() => {
 })
 
 const clickOnSegment = (index: number) => {
+  if (isSegmentLocked(index)) return
   if (!isBomb(index)) {
     segmentInformationObject.value[index].uncovered = true
 
@@ -94,7 +95,17 @@ const clickOnSegment = (index: number) => {
 }
 
 const rightClickOnSegment = (index: number) => {
-  segmentInformationObject.value[index].masked = true
+  if (mineCoversLeft.value <= 0 || segmentInformationObject.value[index].uncovered) {
+    return
+  }
+
+  if (!segmentInformationObject.value[index].masked) {
+    segmentInformationObject.value[index].masked = true
+    mineCoversLeft.value--
+  } else {
+    segmentInformationObject.value[index].masked = false
+    mineCoversLeft.value++
+  }
 }
 
 const isBomb = (index: number) => {
