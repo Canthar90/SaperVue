@@ -311,6 +311,13 @@ function gameOver() {
   gameState.value.gameEnded = true
   gameState.value.gameStarted = false
   gameEmoji.value = '😔'
+  gameOverUncoveringBombs()
+}
+
+function gameOverUncoveringBombs() {
+  for (let bomb in bombSegmentObjects.value) {
+    bombSegmentObjects.value[bomb].clicked = true
+  }
 }
 
 const GameReset = () => {
