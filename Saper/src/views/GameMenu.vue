@@ -34,10 +34,12 @@
         :class="{
           'bg-red-500': isBombUncovered(index),
           'bg-slate-200': isSegmentUncovered(index),
-          'bg-slate-600': isSegmentCovered(index)
+          'bg-slate-600': isSegmentCovered(index),
+          'bg-yellow-600': isSegmentLocked(index)
         }"
         role="button"
         @click="clickOnSegment(index)"
+        @click.right="rightClickOnSegment(index)"
       >
         <p
           v-if="segmentInformationObject[index].numberOfNearbyBombs > 0"
@@ -60,7 +62,9 @@ const numberOfYSegments = ref(9)
 const numberOfMines = ref(10)
 
 const bombSegmentObjects: Ref<{ index: number; clicked: boolean }[]> = ref([])
-const segmentInformationObject: Ref<{ uncovered: boolean; numberOfNearbyBombs: number }[]> = ref([])
+const segmentInformationObject: Ref<
+  { uncovered: boolean; numberOfNearbyBombs: number; masked: boolean }[]
+> = ref([])
 
 onBeforeMount(() => {
   generateSegmentUncoverFlags()
@@ -79,15 +83,18 @@ const totalNumberOfSegments = computed(() => {
 const clickOnSegment = (index: number) => {
   if (!isBomb(index)) {
     segmentInformationObject.value[index].uncovered = true
-    // console.log(segmentInformationObject.value[index].uncovered)
 
     segmentInformationObject.value[index].numberOfNearbyBombs = checkIfNearbySegmentIsBomb(index)
-    // console.log(segmentInformationObject.value[index].numberOfNearbyBombs)
+
     return
-  }
+  } else gameOver()
 
   const found = bombSegmentObjects.value.find((e) => e.index === index)
   if (found) found.clicked = true
+}
+
+const rightClickOnSegment = (index: number) => {
+  segmentInformationObject.value[index].masked = true
 }
 
 const isBomb = (index: number) => {
@@ -108,6 +115,16 @@ const isSegmentUncovered = (index: number) => {
 
 const isSegmentCovered = (index: number) => {
   if (!isSegmentUncovered(index) && !isBombUncovered(index)) {
+    return true
+  } else return false
+}
+
+const isSegmentLocked = (index: number) => {
+  if (
+    !isSegmentUncovered(index) &&
+    !isBombUncovered(index) &&
+    segmentInformationObject.value[index].masked
+  ) {
     return true
   } else return false
 }
@@ -147,7 +164,7 @@ function generateBombSegments() {
 
 function generateSegmentUncoverFlags() {
   for (let i = 0; i < totalNumberOfSegments.value + 1; i++) {
-    const newElement = { uncovered: false, numberOfNearbyBombs: 0 }
+    const newElement = { uncovered: false, numberOfNearbyBombs: 0, masked: false }
     segmentInformationObject.value.push(newElement)
   }
   console.log(segmentInformationObject.value)
