@@ -306,6 +306,7 @@ function TimerStart() {
 
 function updateTime() {
   if (timeLeft.value.seconds === 0 && timeLeft.value.minutes === 0) {
+    gameOver()
     return
   }
   if (timeLeft.value.seconds === 0 && timeLeft.value.minutes > 0) {
@@ -318,16 +319,7 @@ function updateTime() {
 
 TimerStart()
 
-const gameState: Ref<{ gameStarted: boolean; gameLoose: boolean; gameEnded: boolean }> = ref({
-  gameStarted: false,
-  gameLoose: false,
-  gameEnded: false
-})
-
 function gameOver() {
-  gameState.value.gameLoose = true
-  gameState.value.gameEnded = true
-  gameState.value.gameStarted = false
   gameEmoji.value = '😔'
   gameOverUncoveringBombs()
 }
@@ -339,19 +331,26 @@ function gameOverUncoveringBombs() {
 }
 
 const GameReset = () => {
-  if (gameState.value.gameStarted) {
-    mineCoversLeft.value--
-    timeLeft.value.minutes--
-  } else if (
-    !gameState.value.gameStarted &&
-    !gameState.value.gameEnded &&
-    (timeLeft.value.minutes > 0 || timeLeft.value.seconds > 0)
-  ) {
-    gameState.value.gameStarted = true
+  bombsSwapingOnReset()
+  segmentsCoveringForGameReset()
+  timeLeft.value = {
+    minutes: 0,
+    seconds: 40
   }
+  gameEmoji.value = '😊'
+}
 
-  if (timeLeft.value.minutes === 0 && timeLeft.value.seconds === 0 && gameState.value.gameStarted) {
-    gameOver()
+function bombsSwapingOnReset() {
+  bombSegmentObjects.value.length = 0
+
+  generateBombSegments()
+}
+
+function segmentsCoveringForGameReset() {
+  for (let elem in segmentInformationObject.value) {
+    segmentInformationObject.value[elem].masked = false
+    segmentInformationObject.value[elem].uncovered = false
+    segmentInformationObject.value[elem].numberOfNearbyBombs = 0
   }
 }
 </script>
