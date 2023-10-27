@@ -296,9 +296,27 @@ const gameEmoji: Ref<string> = ref('😊')
 let mineCoversLeft: Ref<number> = ref(10)
 
 const timeLeft: Ref<{ minutes: number; seconds: number }> = ref({
-  minutes: 10,
-  seconds: 0
+  minutes: 0,
+  seconds: 40
 })
+
+function TimerStart() {
+  setInterval(updateTime, 1000)
+}
+
+function updateTime() {
+  if (timeLeft.value.seconds === 0 && timeLeft.value.minutes === 0) {
+    return
+  }
+  if (timeLeft.value.seconds === 0 && timeLeft.value.minutes > 0) {
+    timeLeft.value.minutes--
+    timeLeft.value.seconds = 60
+  } else {
+    timeLeft.value.seconds--
+  }
+}
+
+TimerStart()
 
 const gameState: Ref<{ gameStarted: boolean; gameLoose: boolean; gameEnded: boolean }> = ref({
   gameStarted: false,
