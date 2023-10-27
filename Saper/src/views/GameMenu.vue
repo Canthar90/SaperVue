@@ -66,16 +66,24 @@ const segmentInformationObject: Ref<
   { uncovered: boolean; numberOfNearbyBombs: number; masked: boolean }[]
 > = ref([])
 
+const gameEmoji: Ref<string> = ref('😊')
+let mineCoversLeft: Ref<number> = ref(10)
+
 const gameIsOn = computed(() => {
   for (let elem in bombSegmentObjects.value) {
     if (bombSegmentObjects.value[elem].clicked) return false
   }
   const numberOfUncoveredSegments = countUncoveredElements()
   const segmentsToUncover = totalNumberOfSegments.value - numberOfMines.value
-  if (numberOfUncoveredSegments === segmentsToUncover) {
+  if (numberOfUncoveredSegments + -1 === segmentsToUncover) {
+    gameWin()
     return false
   } else return true
 })
+
+function gameWin() {
+  gameEmoji.value = '🎇'
+}
 
 function countUncoveredElements(): number {
   let numberOfUncoveredSegments = 0
@@ -114,15 +122,11 @@ const clickOnSegment = (index: number) => {
 }
 
 const rightClickOnSegment = (index: number) => {
-  if (
-    mineCoversLeft.value <= 0 ||
-    segmentInformationObject.value[index].uncovered ||
-    !gameIsOn.value
-  ) {
+  if (segmentInformationObject.value[index].uncovered || !gameIsOn.value) {
     return
   }
 
-  if (!segmentInformationObject.value[index].masked) {
+  if (!segmentInformationObject.value[index].masked && mineCoversLeft.value > 0) {
     segmentInformationObject.value[index].masked = true
     mineCoversLeft.value--
   } else {
@@ -200,11 +204,6 @@ function generateSegmentUncoverFlags() {
   for (let i = 0; i < totalNumberOfSegments.value + 1; i++) {
     const newElement = { uncovered: false, numberOfNearbyBombs: 0, masked: false }
     segmentInformationObject.value.push(newElement)
-  }
-  console.log(segmentInformationObject.value)
-
-  for (let elem in segmentInformationObject.value) {
-    console.log(segmentInformationObject.value[elem].uncovered)
   }
 }
 
@@ -292,12 +291,9 @@ const gridColsNum = computed(() => {
   return [`grid-rows-${numberOfXSegments.value}`, `grid-cols-${numberOfYSegments.value}`]
 })
 
-const gameEmoji: Ref<string> = ref('😊')
-let mineCoversLeft: Ref<number> = ref(10)
-
 const timeLeft: Ref<{ minutes: number; seconds: number }> = ref({
-  minutes: 0,
-  seconds: 40
+  minutes: 10,
+  seconds: 0
 })
 
 function TimerStart() {
@@ -308,7 +304,8 @@ function updateTime() {
   if (timeLeft.value.seconds === 0 && timeLeft.value.minutes === 0) {
     gameOver()
     return
-  }
+  } else if (!gameIsOn.value) return
+
   if (timeLeft.value.seconds === 0 && timeLeft.value.minutes > 0) {
     timeLeft.value.minutes--
     timeLeft.value.seconds = 60
