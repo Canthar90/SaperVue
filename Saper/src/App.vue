@@ -2,7 +2,6 @@
   <header></header>
 
   <body>
-    <div class="pt-18">Placecholder</div>
     <div>
       <game-menu class="mt-24"></game-menu>
     </div>
