@@ -5,7 +5,7 @@
     >
       <div class="grid col-span-4">
         <div class="flex justify-center bg-slate-600 rounded-xl">
-          <form :action="ChangeGameParams" class="flex">
+          <div class="flex">
             <label for="rows" class="block text-xs font-medium text-gray-900 text-center pt-1 pr-1"
               >Nr of Rows</label
             >
@@ -14,6 +14,7 @@
               id="rows"
               class="bg-slate-500 placeholder:text-gray-950 text-gray-900"
               aria-placeholder="8"
+              v-model="selectedNrRows"
             >
               <option>4</option>
               <option>5</option>
@@ -33,6 +34,7 @@
               id="cols"
               class="bg-slate-500 placeholder:text-gray-950 text-gray-900"
               aria-placeholder="8"
+              v-model="selectedNrCols"
             >
               <option>4</option>
               <option>5</option>
@@ -51,6 +53,7 @@
               name="cols"
               id="cols"
               class="bg-slate-500 placeholder:text-gray-950 text-gray-900"
+              v-model="selectedNrBombs"
             >
               <option>4</option>
               <option>5</option>
@@ -65,7 +68,14 @@
               <option>14</option>
               <option>15</option>
             </select>
-          </form>
+            <input
+              type="submit"
+              value="Submit"
+              class="bg-yellow-400 rounded-r-xl"
+              @click="ChangeGameParams"
+              role="button"
+            />
+          </div>
         </div>
       </div>
       <div class="col-span-4 grid grid-cols-3">
@@ -130,6 +140,10 @@ const numberOfXSegments = ref(8)
 const numberOfYSegments = ref(9)
 const numberOfMines = ref(10)
 
+const selectedNrRows: Ref<string> = ref('')
+const selectedNrCols: Ref<string> = ref('')
+const selectedNrBombs: Ref<string> = ref('')
+
 const bombSegmentObjects: Ref<{ index: number; clicked: boolean }[]> = ref([])
 const segmentInformationObject: Ref<
   { uncovered: boolean; numberOfNearbyBombs: number; masked: boolean }[]
@@ -151,6 +165,16 @@ const gameIsOn = computed(() => {
 })
 
 const ChangeGameParams = () => {
+  if (!selectedNrCols.value || !selectedNrRows.value || !selectedNrBombs.value) {
+    return
+  }
+
+  numberOfXSegments.value = Number(selectedNrRows.value)
+  numberOfYSegments.value = Number(selectedNrCols.value)
+  numberOfMines.value = Number(selectedNrBombs.value)
+  mineCoversLeft.value = Number(selectedNrBombs.value)
+  GameReset()
+  console.log('hangess')
   return 'hi'
 }
 
@@ -404,8 +428,8 @@ const GameReset = () => {
   bombsSwapingOnReset()
   segmentsCoveringForGameReset()
   timeLeft.value = {
-    minutes: 0,
-    seconds: 40
+    minutes: 10,
+    seconds: 0
   }
   gameEmoji.value = '😊'
 }
