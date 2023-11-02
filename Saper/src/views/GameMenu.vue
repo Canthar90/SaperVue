@@ -136,6 +136,8 @@
 import { ref, computed, onBeforeMount } from 'vue'
 import type { Ref } from 'vue'
 
+// ------------------ Basic Settings and parameters ----------------------------
+
 const numberOfXSegments = ref(8)
 const numberOfYSegments = ref(9)
 const numberOfMines = ref(10)
@@ -206,6 +208,8 @@ const totalNumberOfSegments = computed(() => {
   return numberOfAllSegments
 })
 
+// ----------------- Click mechanics--------------------
+
 const clickOnSegment = (index: number) => {
   if (isSegmentLocked(index) || !gameIsOn.value) return
   if (!isBomb(index)) {
@@ -233,6 +237,8 @@ const rightClickOnSegment = (index: number) => {
     mineCoversLeft.value++
   }
 }
+
+// ----------------------------- Segment Styles Constants --------------------------------
 
 const isBomb = (index: number) => {
   if (bombSegmentObjects.value.find((e) => e.index === index)) return true
@@ -265,6 +271,12 @@ const isSegmentLocked = (index: number) => {
     return true
   } else return false
 }
+
+const gridColsNum = computed(() => {
+  return [`grid-rows-${numberOfXSegments.value}`, `grid-cols-${numberOfYSegments.value}`]
+})
+
+// ---------------------------------- Functions Generating Segments and Bomb Segments -------------------------------
 
 function checkIfOccupyed(index: number, pastIndexes: number[]) {
   if (pastIndexes.includes(index)) {
@@ -322,6 +334,8 @@ function checkIfNearbySegmentIsBomb(index: number): number {
     return 0
   }
 }
+
+// ---------------------------------- function for uncovering segments and checking numbers of those segmets ----------------------------
 
 function indexesOfNearbySegments(index: number) {
   let nearbyIndexes: number[] = []
@@ -386,9 +400,7 @@ function detectNearbyBombs(index: number) {
   return numberOfNearbyBombs
 }
 
-const gridColsNum = computed(() => {
-  return [`grid-rows-${numberOfXSegments.value}`, `grid-cols-${numberOfYSegments.value}`]
-})
+// ---------------- Timer Mechanics ------------------------------------------------------
 
 const timeLeft: Ref<{ minutes: number; seconds: number }> = ref({
   minutes: 10,
@@ -414,6 +426,8 @@ function updateTime() {
 }
 
 TimerStart()
+
+// ----------------------------------------- end Game Resets mechanics ----------------------------------------------------
 
 function gameOver() {
   gameEmoji.value = '😔'
