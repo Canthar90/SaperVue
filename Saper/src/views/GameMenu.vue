@@ -457,10 +457,8 @@ function bombsSwapingOnReset() {
 }
 
 function segmentsCoveringForGameReset() {
-  for (let elem in segmentInformationObject.value) {
-    delete segmentInformationObject.value[elem]
-  }
-  segmentInformationObject.value.length = 0
+  segmentInformationObject.value = []
+
   generateSegmentUncoverFlags()
 }
 </script>
