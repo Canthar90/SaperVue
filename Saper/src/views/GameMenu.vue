@@ -120,7 +120,6 @@
         @click="clickOnSegment(index)"
         @click.right="rightClickOnSegment(index)"
       >
-        <!-- <p v-if="segmentInformationObject[index] === undefined"></p> -->
         <p
           v-if="segmentInformationObject[index].numberOfNearbyBombs > 0"
           class="font-black underline text-xs"
@@ -158,11 +157,10 @@ const gameIsOn = computed(() => {
     if (bombSegmentObjects.value[elem].clicked) return false
   }
   const numberOfUncoveredSegments = countUncoveredElements()
-  console.log(numberOfUncoveredSegments)
+
   const segmentsToUncover = totalNumberOfSegments.value - numberOfMines.value
-  console.log(segmentsToUncover)
+
   if (numberOfUncoveredSegments === segmentsToUncover) {
-    console.log(segmentsToUncover)
     gameWin()
     return false
   } else return true
@@ -178,7 +176,7 @@ const ChangeGameParams = () => {
   numberOfMines.value = Number(selectedNrBombs.value)
   mineCoversLeft.value = Number(selectedNrBombs.value)
   GameReset()
-  console.log('hangess')
+
   return 'hi'
 }
 
@@ -247,7 +245,7 @@ const isBombUncovered = (index: number) => {
 }
 
 const isSegmentUncovered = (index: number) => {
-  if (isBomb(index) || segmentInformationObject.value[index] === undefined) return false
+  if (isBomb(index)) return false
 
   if (segmentInformationObject.value[index].uncovered === true) return true
 }
@@ -259,8 +257,6 @@ const isSegmentCovered = (index: number) => {
 }
 
 const isSegmentLocked = (index: number) => {
-  if (segmentInformationObject.value[index] === undefined) return
-
   if (
     !isSegmentUncovered(index) &&
     !isBombUncovered(index) &&
@@ -304,12 +300,10 @@ function generateBombSegments() {
 }
 
 function generateSegmentUncoverFlags() {
-  console.log('new elements making')
   for (let i = 0; i < totalNumberOfSegments.value + 1; i++) {
     const newElement = { uncovered: false, numberOfNearbyBombs: 0, masked: false }
     segmentInformationObject.value.push(newElement)
   }
-  console.log(segmentInformationObject.value)
 }
 
 function checkIfNearbySegmentIsBomb(index: number): number {
