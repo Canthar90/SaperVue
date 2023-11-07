@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center p-4">
+  <!-- <div class="flex justify-center p-4">
     <div
       class="grid gap-4 grid-rows-1 grid-cols-4 bg-slate-400 justify-center rounded-sm p-2 justify-items-center"
     >
@@ -102,8 +102,18 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
+  <minesweper-menu
+    :coversLeft="mineCoversLeft"
+    :Bombs="selectedNrBombs"
+    :Cols="selectedNrCols"
+    :Rows="selectedNrRows"
+    :Emoji="gameEmoji"
+    :time="timeLeft"
+    :GameParams="ChangeGameParams"
+    :Reset="GameReset"
+  ></minesweper-menu>
   <div class="flex justify-center">
     <div :class="gridColsNum" class="grid gap-2 justify-center">
       <div
@@ -135,6 +145,8 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount } from 'vue'
 import type { Ref } from 'vue'
+
+import MinesweperMenu from '@/components/Minesweper/MinesweperMenu.vue'
 
 // ------------------ Basic Settings and parameters ----------------------------
 
@@ -178,8 +190,6 @@ const ChangeGameParams = () => {
   numberOfMines.value = Number(selectedNrBombs.value)
   mineCoversLeft.value = Number(selectedNrBombs.value)
   GameReset()
-
-  return 'hi'
 }
 
 function gameWin() {
@@ -458,7 +468,7 @@ function bombsSwapingOnReset() {
 
 function segmentsCoveringForGameReset() {
   segmentInformationObject.value = []
-
+  mineCoversLeft.value = numberOfMines.value
   generateSegmentUncoverFlags()
 }
 </script>
