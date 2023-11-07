@@ -1,118 +1,10 @@
 <template>
-  <!-- <div class="flex justify-center p-4">
-    <div
-      class="grid gap-4 grid-rows-1 grid-cols-4 bg-slate-400 justify-center rounded-sm p-2 justify-items-center"
-    >
-      <div class="grid col-span-4">
-        <div class="flex justify-center bg-slate-600 rounded-xl">
-          <div class="flex">
-            <label for="rows" class="block text-xs font-medium text-gray-900 text-center pt-1 pr-1"
-              >Nr of Rows</label
-            >
-            <select
-              name="rows"
-              id="rows"
-              class="bg-slate-500 placeholder:text-gray-950 text-gray-900"
-              aria-placeholder="8"
-              v-model="selectedNrRows"
-            >
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-              <option>7</option>
-              <option>8</option>
-              <option>9</option>
-              <option>10</option>
-              <option>11</option>
-            </select>
-
-            <label for="cols" class="block text-xs font-medium text-gray-900 text-center pt-1 pr-1"
-              >Nr of Cols</label
-            >
-            <select
-              name="cols"
-              id="cols"
-              class="bg-slate-500 placeholder:text-gray-950 text-gray-900"
-              aria-placeholder="8"
-              v-model="selectedNrCols"
-            >
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-              <option>7</option>
-              <option>8</option>
-              <option>9</option>
-              <option>10</option>
-              <option>11</option>
-            </select>
-
-            <label for="bombs" class="block text-xs font-medium text-gray-900 text-center pt-1 pr-1"
-              >Nr of bombs</label
-            >
-            <select
-              name="cols"
-              id="cols"
-              class="bg-slate-500 placeholder:text-gray-950 text-gray-900"
-              v-model="selectedNrBombs"
-            >
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-              <option>7</option>
-              <option>8</option>
-              <option>9</option>
-              <option>10</option>
-              <option>11</option>
-              <option>12</option>
-              <option>13</option>
-              <option>14</option>
-              <option>15</option>
-            </select>
-            <input
-              type="submit"
-              value="Submit"
-              class="bg-yellow-400 rounded-r-xl"
-              @click="ChangeGameParams"
-              role="button"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="col-span-4 grid grid-cols-3">
-        <div
-          class="border border-solid border-black bg-slate-800 text-red-700 p-2 border-spacing-2 lining-nums text-xl"
-        >
-          {{
-            `${timeLeft.minutes.toString().padStart(2, '0')}:${timeLeft.seconds
-              .toString()
-              .padStart(2, '0')}`
-          }}
-        </div>
-        <div
-          class="border border-solid border-black border-spacing-2 p-2 flex justify-center"
-          role="button"
-          @click="GameReset"
-        >
-          {{ gameEmoji }}
-        </div>
-        <div
-          class="p-2 border-spacing-2 border border-solid border-black bg-slate-800 text-red-700 flex justify-center lining-nums text-xl"
-        >
-          {{ mineCoversLeft.toString().padStart(3, '0') }}
-        </div>
-      </div>
-    </div>
-  </div> -->
-
   <minesweper-menu
     :coversLeft="mineCoversLeft"
-    :Bombs="selectedNrBombs"
-    :Cols="selectedNrCols"
-    :Rows="selectedNrRows"
     :Emoji="gameEmoji"
     :time="timeLeft"
-    :GameParams="ChangeGameParams"
     :Reset="GameReset"
+    @dimention-change="changeGameParamsOnEmit"
   ></minesweper-menu>
   <div class="flex justify-center">
     <div :class="gridColsNum" class="grid gap-2 justify-center">
@@ -154,10 +46,6 @@ const numberOfXSegments = ref(8)
 const numberOfYSegments = ref(9)
 const numberOfMines = ref(10)
 
-const selectedNrRows: Ref<string> = ref('')
-const selectedNrCols: Ref<string> = ref('')
-const selectedNrBombs: Ref<string> = ref('')
-
 const bombSegmentObjects: Ref<{ index: number; clicked: boolean }[]> = ref([])
 const segmentInformationObject: Ref<
   { uncovered: boolean; numberOfNearbyBombs: number; masked: boolean }[]
@@ -180,15 +68,11 @@ const gameIsOn = computed(() => {
   } else return true
 })
 
-const ChangeGameParams = () => {
-  if (!selectedNrCols.value || !selectedNrRows.value || !selectedNrBombs.value) {
-    return
-  }
-
-  numberOfXSegments.value = Number(selectedNrRows.value)
-  numberOfYSegments.value = Number(selectedNrCols.value)
-  numberOfMines.value = Number(selectedNrBombs.value)
-  mineCoversLeft.value = Number(selectedNrBombs.value)
+const changeGameParamsOnEmit = (rows: string, cols: string, bombs: string) => {
+  numberOfXSegments.value = Number(rows)
+  numberOfYSegments.value = Number(cols)
+  numberOfMines.value = Number(bombs)
+  mineCoversLeft.value = Number(bombs)
   GameReset()
 }
 

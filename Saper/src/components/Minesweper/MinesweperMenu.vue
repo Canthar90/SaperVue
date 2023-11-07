@@ -14,7 +14,7 @@
               id="rows"
               class="bg-slate-500 placeholder:text-gray-950 text-gray-900"
               aria-placeholder="8"
-              v-model="selectedNrRows"
+              v-model="rows"
             >
               <option>4</option>
               <option>5</option>
@@ -34,7 +34,7 @@
               id="cols"
               class="bg-slate-500 placeholder:text-gray-950 text-gray-900"
               aria-placeholder="8"
-              v-model="selectedNrCols"
+              v-model="cols"
             >
               <option>4</option>
               <option>5</option>
@@ -53,7 +53,7 @@
               name="cols"
               id="cols"
               class="bg-slate-500 placeholder:text-gray-950 text-gray-900"
-              v-model="selectedNrBombs"
+              v-model="bombs"
             >
               <option>4</option>
               <option>5</option>
@@ -72,7 +72,7 @@
               type="submit"
               value="Submit"
               class="bg-yellow-400 rounded-r-xl px-1"
-              @click="props.GameParams"
+              @click="$emit('dimentionChange', rows, cols, bombs)"
               role="button"
             />
           </div>
@@ -110,25 +110,10 @@ import { ref } from 'vue'
 import type { Ref } from 'vue'
 
 const props = defineProps({
-  Rows: {
-    type: String,
-    default: '8'
-  },
-  Cols: {
-    type: String,
-    default: '8'
-  },
-  Bombs: {
-    type: String,
-    default: '10'
-  },
   Emoji: {
     type: String
   },
-  GameParams: {
-    type: Object,
-    requiered: true
-  },
+
   time: {
     type: Object
   },
@@ -141,8 +126,7 @@ const props = defineProps({
   }
 })
 
-const selectedNrBombs = ref(props.Bombs)
-const selectedNrCols = ref(props.Cols)
-const selectedNrRows = ref(props.Rows)
-const timeLeft = ref(props.time)
+const rows = ref('')
+const cols = ref('')
+const bombs = ref('')
 </script>
