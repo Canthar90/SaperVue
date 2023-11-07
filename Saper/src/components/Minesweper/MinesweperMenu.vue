@@ -107,7 +107,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { Ref } from 'vue'
 
 const props = defineProps({
   Emoji: {
@@ -115,7 +114,8 @@ const props = defineProps({
   },
 
   time: {
-    type: Object
+    type: Object,
+    required: true
   },
   Reset: {
     type: Object
