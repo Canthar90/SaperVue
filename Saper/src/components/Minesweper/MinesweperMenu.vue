@@ -83,6 +83,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+import type { PropType } from 'vue'
+
+type TimeObject = {
+  minutes: number
+  seconds: number
+}
+
 const colsAndRowsOptionsList = Array.from(new Array(8), (x, i) => i + 4)
 
 const bombsOptionList = Array.from(new Array(12), (x, i) => i + 4)
@@ -93,7 +100,7 @@ const props = defineProps({
   },
 
   time: {
-    type: Object,
+    type: Object as PropType<TimeObject>,
     required: true
   },
   Reset: {

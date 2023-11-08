@@ -31,9 +31,15 @@
 import { computed } from 'vue'
 import type { PropType } from 'vue'
 
-type bombObject = {
+type BombObject = {
   index: number
   clicked: boolean
+}
+
+type SegmentObject = {
+  uncovered: boolean
+  numberOfNearbyBombs: number
+  masked: boolean
 }
 
 const props = defineProps({
@@ -43,11 +49,11 @@ const props = defineProps({
   },
   segmentInfo: {
     required: true,
-    type: Object
+    type: Array as PropType<SegmentObject[]>
   },
   bombInfo: {
     required: true,
-    type: Object as PropType<bombObject[]>
+    type: Array as PropType<BombObject[]>
   },
   colNr: {
     required: true,
