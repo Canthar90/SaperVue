@@ -6,7 +6,18 @@
     :Reset="GameReset"
     @dimention-change="changeGameParamsOnEmit"
   ></minesweper-menu>
-  <div class="flex justify-center">
+
+  <minesweper-game
+    :number-of-segments="totalNumberOfSegments"
+    :segment-info="segmentInformationObject"
+    :bomb-info="bombSegmentObjects"
+    :col-nr="numberOfYSegments"
+    :row-nr="numberOfXSegments"
+    :bomb-covers="mineCoversLeft"
+    @left-click-on-segment="clickOnSegment"
+    @right-click-on-segment="rightClickOnSegment"
+  ></minesweper-game>
+  <!-- <div class="flex justify-center">
     <div :class="gridColsNum" class="grid gap-2 justify-center">
       <div
         v-for="index in totalNumberOfSegments"
@@ -31,7 +42,7 @@
         <p v-else class="invisible">0</p>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
@@ -39,6 +50,7 @@ import { ref, computed, onBeforeMount } from 'vue'
 import type { Ref } from 'vue'
 
 import MinesweperMenu from '@/components/Minesweper/MinesweperMenu.vue'
+import MinesweperGame from '@/components/Minesweper/MinesweperGame.vue'
 
 // ------------------ Basic Settings and parameters ----------------------------
 
@@ -105,7 +117,7 @@ const totalNumberOfSegments = computed(() => {
 // ----------------- Click mechanics--------------------
 
 const clickOnSegment = (index: number) => {
-  if (isSegmentLocked(index) || !gameIsOn.value) return
+  if (segmentInformationObject.value[index].masked || !gameIsOn.value) return
   if (!isBomb(index)) {
     segmentInformationObject.value[index].uncovered = true
 
@@ -138,37 +150,37 @@ const isBomb = (index: number) => {
   if (bombSegmentObjects.value.find((e) => e.index === index)) return true
 }
 
-const isBombUncovered = (index: number) => {
-  if (!isBomb(index)) return false
+// const isBombUncovered = (index: number) => {
+//   if (!isBomb(index)) return false
 
-  if (bombSegmentObjects.value.find((e) => e.clicked === true && e.index === index)) return true
-}
+//   if (bombSegmentObjects.value.find((e) => e.clicked === true && e.index === index)) return true
+// }
 
-const isSegmentUncovered = (index: number) => {
-  if (isBomb(index)) return false
+// const isSegmentUncovered = (index: number) => {
+//   if (isBomb(index)) return false
 
-  if (segmentInformationObject.value[index].uncovered === true) return true
-}
+//   if (segmentInformationObject.value[index].uncovered === true) return true
+// }
 
-const isSegmentCovered = (index: number) => {
-  if (!isSegmentUncovered(index) && !isBombUncovered(index)) {
-    return true
-  } else return false
-}
+// const isSegmentCovered = (index: number) => {
+//   if (!isSegmentUncovered(index) && !isBombUncovered(index)) {
+//     return true
+//   } else return false
+// }
 
-const isSegmentLocked = (index: number) => {
-  if (
-    !isSegmentUncovered(index) &&
-    !isBombUncovered(index) &&
-    segmentInformationObject.value[index].masked
-  ) {
-    return true
-  } else return false
-}
+// const isSegmentLocked = (index: number) => {
+//   if (
+//     !isSegmentUncovered(index) &&
+//     !isBombUncovered(index) &&
+//     segmentInformationObject.value[index].masked
+//   ) {
+//     return true
+//   } else return false
+// }
 
-const gridColsNum = computed(() => {
-  return [`grid-rows-${numberOfXSegments.value}`, `grid-cols-${numberOfYSegments.value}`]
-})
+// const gridColsNum = computed(() => {
+//   return [`grid-rows-${numberOfXSegments.value}`, `grid-cols-${numberOfYSegments.value}`]
+// })
 
 // ---------------------------------- Functions Generating Segments and Bomb Segments -------------------------------
 
