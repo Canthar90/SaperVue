@@ -16,14 +16,7 @@
               aria-placeholder="8"
               v-model="rows"
             >
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-              <option>7</option>
-              <option>8</option>
-              <option>9</option>
-              <option>10</option>
-              <option>11</option>
+              <option v-for="num in colsAndRowsOptionsList" :key="num">{{ num }}</option>
             </select>
 
             <label for="cols" class="block text-xs font-medium text-gray-900 text-center pt-1 pr-1"
@@ -36,14 +29,7 @@
               aria-placeholder="8"
               v-model="cols"
             >
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-              <option>7</option>
-              <option>8</option>
-              <option>9</option>
-              <option>10</option>
-              <option>11</option>
+              <option v-for="num in colsAndRowsOptionsList" :key="num">{{ num }}</option>
             </select>
 
             <label for="bombs" class="block text-xs font-medium text-gray-900 text-center pt-1 pr-1"
@@ -55,18 +41,7 @@
               class="bg-slate-500 placeholder:text-gray-950 text-gray-900"
               v-model="bombs"
             >
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-              <option>7</option>
-              <option>8</option>
-              <option>9</option>
-              <option>10</option>
-              <option>11</option>
-              <option>12</option>
-              <option>13</option>
-              <option>14</option>
-              <option>15</option>
+              <option v-for="num in bombsOptionList" :key="num">{{ num }}</option>
             </select>
             <input
               type="submit"
@@ -107,6 +82,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+
+const colsAndRowsOptionsList = Array.from(new Array(8), (x, i) => i + 4)
+
+const bombsOptionList = Array.from(new Array(12), (x, i) => i + 4)
 
 const props = defineProps({
   Emoji: {
