@@ -51,21 +51,12 @@ const props = defineProps({
     required: true,
     type: Number
   },
-  // bombNr: {
-  //   required: true,
-  //   type: Number
-  // },
+
   bombCovers: {
     required: true,
     type: Number
   }
 })
-
-// const bombSegmentObjects = ref(props.bombInfo)
-
-// const mineCoversLeft = ref(props.bombCovers)
-
-// const totalNumberOfSegments: Ref<number> = ref(props.numberOfSegments)
 
 const isBomb = (index: number) => {
   if (props.bombInfo.find((e) => e.index === index)) return true

@@ -17,32 +17,6 @@
     @left-click-on-segment="clickOnSegment"
     @right-click-on-segment="rightClickOnSegment"
   ></minesweper-game>
-  <!-- <div class="flex justify-center">
-    <div :class="gridColsNum" class="grid gap-2 justify-center">
-      <div
-        v-for="index in totalNumberOfSegments"
-        :key="index"
-        class="border border-solid border-black rounded-lg p-6 flex justify-center"
-        :class="{
-          'bg-red-500': isBombUncovered(index),
-          'bg-slate-200': isSegmentUncovered(index),
-          'bg-slate-600': isSegmentCovered(index),
-          'bg-yellow-600': isSegmentLocked(index)
-        }"
-        role="button"
-        @click="clickOnSegment(index)"
-        @click.right="rightClickOnSegment(index)"
-      >
-        <p
-          v-if="segmentInformationObject[index].numberOfNearbyBombs > 0"
-          class="font-black underline text-xs"
-        >
-          {{ segmentInformationObject[index].numberOfNearbyBombs }}
-        </p>
-        <p v-else class="invisible">0</p>
-      </div>
-    </div>
-  </div> -->
 </template>
 
 <script setup lang="ts">
@@ -149,38 +123,6 @@ const rightClickOnSegment = (index: number) => {
 const isBomb = (index: number) => {
   if (bombSegmentObjects.value.find((e) => e.index === index)) return true
 }
-
-// const isBombUncovered = (index: number) => {
-//   if (!isBomb(index)) return false
-
-//   if (bombSegmentObjects.value.find((e) => e.clicked === true && e.index === index)) return true
-// }
-
-// const isSegmentUncovered = (index: number) => {
-//   if (isBomb(index)) return false
-
-//   if (segmentInformationObject.value[index].uncovered === true) return true
-// }
-
-// const isSegmentCovered = (index: number) => {
-//   if (!isSegmentUncovered(index) && !isBombUncovered(index)) {
-//     return true
-//   } else return false
-// }
-
-// const isSegmentLocked = (index: number) => {
-//   if (
-//     !isSegmentUncovered(index) &&
-//     !isBombUncovered(index) &&
-//     segmentInformationObject.value[index].masked
-//   ) {
-//     return true
-//   } else return false
-// }
-
-// const gridColsNum = computed(() => {
-//   return [`grid-rows-${numberOfXSegments.value}`, `grid-cols-${numberOfYSegments.value}`]
-// })
 
 // ---------------------------------- Functions Generating Segments and Bomb Segments -------------------------------
 
