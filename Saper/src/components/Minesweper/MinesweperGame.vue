@@ -29,6 +29,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { PropType } from 'vue'
+
+type bombObject = {
+  index: number
+  clicked: boolean
+}
 
 const props = defineProps({
   numberOfSegments: {
@@ -41,7 +47,7 @@ const props = defineProps({
   },
   bombInfo: {
     required: true,
-    type: Object
+    type: Object as PropType<bombObject[]>
   },
   colNr: {
     required: true,
