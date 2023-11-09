@@ -13,7 +13,7 @@
         }"
         role="button"
         @click="$emit('leftClickOnSegment', index)"
-        @click.right="$emit('rightClickOnsegment', index)"
+        @click.right="$emit('rightClickOnSegment', index)"
       >
         <p
           v-if="props.segmentInfo[index].numberOfNearbyBombs > 0"
@@ -39,7 +39,7 @@ type BombObject = {
 type SegmentObject = {
   uncovered: boolean
   numberOfNearbyBombs: number
-  masked: boolean
+  segmentCovered: boolean
 }
 
 const props = defineProps({
@@ -77,13 +77,13 @@ const isBomb = (index: number) => {
 const isBombUncovered = (index: number) => {
   if (!isBomb(index)) return false
 
-  if (props.bombInfo.find((e) => e.clicked === true && e.index === index)) return true
+  return props.bombInfo.find((e) => e.index === index)?.clicked
 }
 
 const isSegmentUncovered = (index: number) => {
   if (isBomb(index)) return false
 
-  if (props.segmentInfo[index].uncovered === true) return true
+  return props.segmentInfo[index].uncovered
 }
 
 const isSegmentCovered = (index: number) => {
@@ -93,7 +93,11 @@ const isSegmentCovered = (index: number) => {
 }
 
 const isSegmentLocked = (index: number) => {
-  if (!isSegmentUncovered(index) && !isBombUncovered(index) && props.segmentInfo[index].masked) {
+  if (
+    !isSegmentUncovered(index) &&
+    !isBombUncovered(index) &&
+    props.segmentInfo[index].segmentCovered
+  ) {
     return true
   } else return false
 }

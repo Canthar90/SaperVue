@@ -34,7 +34,7 @@ const numberOfMines = ref(10)
 
 const bombSegmentObjects: Ref<{ index: number; clicked: boolean }[]> = ref([])
 const segmentInformationObject: Ref<
-  { uncovered: boolean; numberOfNearbyBombs: number; masked: boolean }[]
+  { uncovered: boolean; numberOfNearbyBombs: number; segmentCovered: boolean }[]
 > = ref([])
 
 const gameEmoji: Ref<string> = ref('😊')
@@ -91,7 +91,7 @@ const totalNumberOfSegments = computed(() => {
 // ----------------- Click mechanics--------------------
 
 const clickOnSegment = (index: number) => {
-  if (segmentInformationObject.value[index].masked || !gameIsOn.value) return
+  if (segmentInformationObject.value[index].segmentCovered || !gameIsOn.value) return
   if (!isBomb(index)) {
     segmentInformationObject.value[index].uncovered = true
 
@@ -109,11 +109,11 @@ const rightClickOnSegment = (index: number) => {
     return
   }
 
-  if (!segmentInformationObject.value[index].masked && mineCoversLeft.value > 0) {
-    segmentInformationObject.value[index].masked = true
+  if (!segmentInformationObject.value[index].segmentCovered && mineCoversLeft.value > 0) {
+    segmentInformationObject.value[index].segmentCovered = true
     mineCoversLeft.value--
   } else {
-    segmentInformationObject.value[index].masked = false
+    segmentInformationObject.value[index].segmentCovered = false
     mineCoversLeft.value++
   }
 }
@@ -121,7 +121,8 @@ const rightClickOnSegment = (index: number) => {
 // ----------------------------- Segment Styles Constants --------------------------------
 
 const isBomb = (index: number) => {
-  if (bombSegmentObjects.value.find((e) => e.index === index)) return true
+  return bombSegmentObjects.value?.find((e) => e.index === index)
+  // if (bombSegmentObjects.value.find((e) => e.index === index)) return true
 }
 
 // ---------------------------------- Functions Generating Segments and Bomb Segments -------------------------------
@@ -161,7 +162,7 @@ function generateBombSegments() {
 
 function generateSegmentUncoverFlags() {
   for (let i = 0; i < totalNumberOfSegments.value + 1; i++) {
-    const newElement = { uncovered: false, numberOfNearbyBombs: 0, masked: false }
+    const newElement = { uncovered: false, numberOfNearbyBombs: 0, segmentCovered: false }
     segmentInformationObject.value.push(newElement)
   }
 }
