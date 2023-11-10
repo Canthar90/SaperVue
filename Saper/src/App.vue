@@ -9,5 +9,5 @@
 </template>
 
 <script setup lang="ts">
-import GameMenu from './views/GameMenu.vue'
+import GameMenu from './views/MineswepperMain.vue'
 </script>

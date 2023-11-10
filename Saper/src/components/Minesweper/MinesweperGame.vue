@@ -13,7 +13,7 @@
         }"
         role="button"
         @click="$emit('leftClickOnSegment', index)"
-        @click.right="$emit('rightClickOnSegment', index)"
+        @click.right.prevent="$emit('rightClickOnSegment', index)"
       >
         <p
           v-if="props.segmentInfo[index].numberOfNearbyBombs > 0"

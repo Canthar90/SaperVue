@@ -37,22 +37,33 @@ const segmentInformationObject: Ref<
   { uncovered: boolean; numberOfNearbyBombs: number; segmentCovered: boolean }[]
 > = ref([])
 
-const gameEmoji: Ref<string> = ref('😊')
 let mineCoversLeft: Ref<number> = ref(10)
 
 const gameIsOn = computed(() => {
-  for (let elem in bombSegmentObjects.value) {
-    if (bombSegmentObjects.value[elem].clicked) return false
-  }
-  const numberOfUncoveredSegments = countUncoveredElements()
+  if (someBombIsUncovered.value) return false
 
-  const segmentsToUncover = totalNumberOfSegments.value - numberOfMines.value
-
-  if (numberOfUncoveredSegments === segmentsToUncover) {
-    gameWin()
+  if (countUncoveredElements.value === segmentsToUncover.value) {
     return false
   } else return true
 })
+
+const gameEmoji = computed(() => {
+  if (someBombIsUncovered.value) {
+    return '😔'
+  }
+
+  if (gameIsOn.value) {
+    return '😊'
+  }
+
+  return '🎇'
+})
+
+const someBombIsUncovered = computed(() => {
+  return bombSegmentObjects.value.some((e) => e.clicked)
+})
+
+const segmentsToUncover = computed(() => totalNumberOfSegments.value - numberOfMines.value)
 
 const changeGameParamsOnEmit = (rows: string, cols: string, bombs: string) => {
   numberOfXSegments.value = Number(rows)
@@ -62,17 +73,9 @@ const changeGameParamsOnEmit = (rows: string, cols: string, bombs: string) => {
   GameReset()
 }
 
-function gameWin() {
-  gameEmoji.value = '🎇'
-}
-
-function countUncoveredElements(): number {
-  let numberOfUncoveredSegments = 0
-  for (let elem in segmentInformationObject.value) {
-    if (segmentInformationObject.value[elem].uncovered) numberOfUncoveredSegments++
-  }
-  return numberOfUncoveredSegments
-}
+const countUncoveredElements = computed(() => {
+  return segmentInformationObject.value.filter((e) => e.uncovered).length
+})
 
 onBeforeMount(() => {
   generateSegmentUncoverFlags()
@@ -121,22 +124,17 @@ const rightClickOnSegment = (index: number) => {
 // ----------------------------- Segment Styles Constants --------------------------------
 
 const isBomb = (index: number) => {
-  return bombSegmentObjects.value?.find((e) => e.index === index)
-  // if (bombSegmentObjects.value.find((e) => e.index === index)) return true
+  return !!bombSegmentObjects.value?.find((e) => e.index === index)
 }
 
 // ---------------------------------- Functions Generating Segments and Bomb Segments -------------------------------
 
 function checkIfOccupyed(index: number, pastIndexes: number[]) {
-  if (pastIndexes.includes(index)) {
-    return true
-  } else return false
+  return pastIndexes.includes(index)
 }
 
 function checkIfNumberIsUnique(index: number, pastIndexes: number[]) {
-  if (!checkIfOccupyed(index, pastIndexes)) {
-    return true
-  } else return false
+  return !checkIfOccupyed(index, pastIndexes)
 }
 
 function generateBombSegments() {
@@ -149,15 +147,11 @@ function generateBombSegments() {
     if (checkIfNumberIsUnique(randomIndex, pastIndexes)) {
       pastIndexes.push(randomIndex)
       i++
-    } else if (!pastIndexes.length) {
-      pastIndexes.push(randomIndex)
-      i++
     }
   }
-  for (const elem in pastIndexes) {
-    const newElement = { index: pastIndexes[elem], clicked: false }
-    bombSegmentObjects.value.push(newElement)
-  }
+  bombSegmentObjects.value = pastIndexes.map((index) => {
+    return { index: index, clicked: false }
+  })
 }
 
 function generateSegmentUncoverFlags() {
@@ -177,6 +171,7 @@ function checkIfNearbySegmentIsBomb(index: number): number {
   } else {
     const indexesToSearch = indexesOfNearbySegments(index)
     for (let ind in indexesToSearch) {
+      // checks and uncovers nerbyu segments that don't have any nerby bomb
       continueCheckingZeros(indexesToSearch[ind])
     }
 
@@ -224,6 +219,7 @@ function indexesOfNearbySegments(index: number) {
 }
 
 function continueCheckingZeros(index: number) {
+  // checks and uncovers segments that have no nearby bomb
   if (
     segmentInformationObject.value[index] === undefined ||
     segmentInformationObject.value[index].uncovered === true ||
@@ -279,7 +275,6 @@ TimerStart()
 // ----------------------------------------- end Game Resets mechanics ----------------------------------------------------
 
 function gameOver() {
-  gameEmoji.value = '😔'
   gameOverUncoveringBombs()
 }
 
@@ -296,12 +291,10 @@ const GameReset = () => {
     minutes: 10,
     seconds: 0
   }
-  gameEmoji.value = '😊'
 }
 
 function bombsSwapingOnReset() {
-  bombSegmentObjects.value.length = 0
-
+  bombSegmentObjects.value = []
   generateBombSegments()
 }
 
